@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import io.realm.Realm
 import kotlinx.android.synthetic.main.content_input.*
+//ここに新規でImport?
 import java.util.*
 import android.app.AlarmManager
 import android.app.PendingIntent
