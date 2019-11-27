@@ -19,7 +19,7 @@
 
             <EditText
                 android:id="@+id/edittext2"
-                android:layout_width="300dp"
+                android:layout_width="270dp"
                 android:layout_height="wrap_content"
                 android:hint="カテゴリー検索" />
 
