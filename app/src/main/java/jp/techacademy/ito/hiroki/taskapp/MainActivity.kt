@@ -10,19 +10,12 @@ import android.content.Intent
 import android.support.v7.app.AlertDialog
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.support.v7.widget.SearchView
-import android.util.Log
-import android.support.v7.widget.SearchView.OnQueryTextListener
-import android.view.Menu
-import android.widget.Toolbar
 
-const val EXTRA_TASK = "jp.techacademy.taro.kirameki.taskapp.TASK"
+/*import java.util.**/
+
+const val EXTRA_TASK = "jp.techacademy.ito.hiroki.taskapp.TASK"
 
 class MainActivity : AppCompatActivity() {
-
-    var countries: MutableList<String> = ArrayList()
-    var displayList: MutableList<String> = ArrayList()
-
     private lateinit var mRealm: Realm
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
@@ -33,13 +26,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mTaskAdapter: TaskAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        toolbar.title = "検索"
-        setActionBar(toolbar)
+        var count: Int = 0
+
+        button.setOnClickListener {
+
+            if (count == 0) {
+                search()
+                button.text = "全て"
+                count = 1
+            } else {
+                reloadListView()
+                button.text = "絞り込み"
+                count = 0
+            }
+        }
 
         fab.setOnClickListener { view ->
             val intent = Intent(this@MainActivity, InputActivity::class.java)
@@ -53,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         // ListViewの設定
         mTaskAdapter = TaskAdapter(this@MainActivity)
+
 
         // ListViewをタップしたときの処理
         listView1.setOnItemClickListener { parent, _, position, _ ->
@@ -95,15 +99,35 @@ class MainActivity : AppCompatActivity() {
                 reloadListView()
             }
 
-            builder.setNegativeButton("CANCEL", null)
+            builder.setNegativeButton("CANCEL") { _, _ ->
+                //search()
+            }
 
             val dialog = builder.create()
             dialog.show()
 
             true
+
         }
 
+
         reloadListView()
+    }
+
+    private fun search() {
+        val result = mRealm.where(Task::class.java)
+            .equalTo("category", edittext2.text.toString())
+            .findAll()
+
+        mTaskAdapter.taskList = mRealm.copyFromRealm(result)
+
+        // TaskのListView用のアダプタに渡す
+        listView1.adapter = mTaskAdapter
+
+        // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+        mTaskAdapter.notifyDataSetChanged()
+
+
     }
 
     private fun reloadListView() {
@@ -121,29 +145,12 @@ class MainActivity : AppCompatActivity() {
         mTaskAdapter.notifyDataSetChanged()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search, menu)
-        if (menu != null) {
-            val searchView = menu.findItem(R.id.menu_search).actionView as SearchView?
-            searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(text: String?): Boolean {
-                    Log.d("kotlintest", "submit text: $text") //reloadlistviewの変更処理を記述データ
-                    return false
-                }
+    override fun onDestroy() {
+        super.onDestroy()
 
-                override fun onQueryTextChange(text: String?): Boolean {
-                    Log.d("kotlintest", "change text: $text") //reloadlistviewの変更処理を記述
-                    return false
-                }
-            })
-        }
-        return super.onCreateOptionsMenu(menu)
+        mRealm.close()
     }
 
-        override fun onDestroy() {
-            super.onDestroy()
 
-            mRealm.close()
-        }
-    }
+}
 

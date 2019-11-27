@@ -30,7 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/content_edit_text"
         android:hint="カテゴリー" />
-
     <Button
         android:id="@+id/date_button"
         android:layout_width="0dp"
