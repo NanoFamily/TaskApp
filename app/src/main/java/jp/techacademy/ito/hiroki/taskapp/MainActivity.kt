@@ -10,7 +10,7 @@ import android.content.Intent
 import android.support.v7.app.AlertDialog
 import android.app.AlarmManager
 import android.app.PendingIntent
-
+/*import android.uti.Log*/
 /*import java.util.**/
 
 const val EXTRA_TASK = "jp.techacademy.ito.hiroki.taskapp.TASK"
